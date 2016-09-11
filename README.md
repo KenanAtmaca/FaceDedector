@@ -9,11 +9,11 @@ dedector.dedectFaceInImage()
 ```
 
 ```Swift
-  dedector.faceCount
-  dedector[0].rightEyePos
+  dedector.faceCount // Int
+  dedector[0].rightEyePos // CGPoint
   dedector[0].leftEyePos
   dedector[0].mouthPos
-  dedector[0].smile
+  dedector[0].smile // Bool
   dedector[0].hasLeftEyeClose
   dedector[0].hasRightEyeClose
 ```
