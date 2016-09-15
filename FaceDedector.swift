@@ -1,34 +1,39 @@
+//
+//  Created by K&
+//  Copyright © 2016 Kenan Atmaca. All rights reserved.
+//
+
 import UIKit
 import CoreImage
 
 
 enum faceBorderStyle {
     
-    case Rect
-    case Oval
-    case None
+    case rect
+    case oval
+    case none
 
 }
 
 enum faceBorderColor {
     
-    case Black
-    case White
-    case Red
+    case black
+    case white
+    case red
     
 }
 
 final class FaceDedector: NSObject {
     
-    private var imgView:UIImageView!
-    private var BorderStyle:faceBorderStyle!
-    private var BorderColor:faceBorderColor!
-    private var BorderWidth:CGFloat!
-    private var faceBox:UIView!
-    private var Faces:[CIFeature] = []
+    fileprivate var imgView:UIImageView!
+    fileprivate var BorderStyle:faceBorderStyle!
+    fileprivate var BorderColor:faceBorderColor!
+    fileprivate var BorderWidth:CGFloat!
+    fileprivate var faceBox:UIView!
+    fileprivate var Faces:[CIFeature] = []
     
     
-    init(imageView:UIImageView,borderStyle:faceBorderStyle = faceBorderStyle.Rect ,borderColor:faceBorderColor = faceBorderColor.White, borderWidth:CGFloat = 3.0) {
+    init(imageView:UIImageView,borderStyle:faceBorderStyle = faceBorderStyle.rect ,borderColor:faceBorderColor = faceBorderColor.white, borderWidth:CGFloat = 3.0) {
         
         self.imgView = imageView
         self.BorderColor = borderColor
@@ -44,18 +49,18 @@ final class FaceDedector: NSObject {
             return false
         }
         
-        let options = [CIDetectorAccuracy: CIDetectorAccuracyHigh,CIDetectorSmile: true]
-        let faceDetector = CIDetector(ofType: CIDetectorTypeFace, context: nil, options: options as? [String : AnyObject])
-        self.Faces = faceDetector.featuresInImage(faceImg)
+        let options = [CIDetectorAccuracy: CIDetectorAccuracyHigh,CIDetectorSmile: true] as [String : Any]
+        let faceDetector = CIDetector(ofType: CIDetectorTypeFace, context: nil, options: options)
+        self.Faces = (faceDetector?.features(in: faceImg))!
         
         let ciImageSize = faceImg.extent.size
-        var transform = CGAffineTransformMakeScale(1, -1)
-        transform = CGAffineTransformTranslate(transform, 0, -ciImageSize.height)
+        var transform = CGAffineTransform(scaleX: 1, y: -1)
+        transform = transform.translatedBy(x: 0, y: -ciImageSize.height)
    
         
         for Face in Faces as! [CIFaceFeature] {
             
-            var faceViewBounds = CGRectApplyAffineTransform(Face.bounds, transform)
+            var faceViewBounds = Face.bounds.applying(transform)
             
             let viewSize = self.imgView.bounds.size
             let scale = min(viewSize.width / ciImageSize.width,
@@ -63,29 +68,29 @@ final class FaceDedector: NSObject {
             let offsetX = (viewSize.width - ciImageSize.width * scale) / 2
             let offsetY = (viewSize.height - ciImageSize.height * scale) / 2
             
-            faceViewBounds = CGRectApplyAffineTransform(faceViewBounds, CGAffineTransformMakeScale(scale, scale))
+            faceViewBounds = faceViewBounds.applying(CGAffineTransform(scaleX: scale, y: scale))
             faceViewBounds.origin.x += offsetX
             faceViewBounds.origin.y += offsetY
             
             faceBox = UIView(frame: faceViewBounds)
             faceBox.layer.borderWidth = self.BorderWidth
-            faceBox.backgroundColor = UIColor.clearColor()
+            faceBox.backgroundColor = UIColor.clear
             
-            if case BorderColor = faceBorderColor.Black {
-                self.faceBox.layer.borderColor = UIColor.blackColor().CGColor
-            } else if case BorderColor = faceBorderColor.White {
-                self.faceBox.layer.borderColor = UIColor.whiteColor().CGColor
-            } else if case BorderColor = faceBorderColor.Red {
-                self.faceBox.layer.borderColor = UIColor.redColor().CGColor
+            if case BorderColor = faceBorderColor.black {
+                self.faceBox.layer.borderColor = UIColor.black.cgColor
+            } else if case BorderColor = faceBorderColor.white {
+                self.faceBox.layer.borderColor = UIColor.white.cgColor
+            } else if case BorderColor = faceBorderColor.red {
+                self.faceBox.layer.borderColor = UIColor.red.cgColor
             }
 
             
-            if case BorderStyle = faceBorderStyle.Oval {
+            if case BorderStyle = faceBorderStyle.oval {
                 self.faceBox.clipsToBounds = true
                 self.faceBox.layer.cornerRadius = faceViewBounds.width / 2
             }
             
-            if case BorderStyle = faceBorderStyle.None {
+            if case BorderStyle = faceBorderStyle.none {
                 self.faceBox.alpha = 0
             }
 
