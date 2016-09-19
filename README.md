@@ -5,7 +5,7 @@
 
 ```Swift
 let dedector = FaceDedector(imageView: imgview, borderStyle: .oval, borderColor: .white, borderWidth: 2.0)
- _ = dedector.dedectFaceInImage()
+dedector.dedectFaceInImage()
 ```
 
 ```Swift
