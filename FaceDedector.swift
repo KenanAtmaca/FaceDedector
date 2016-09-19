@@ -43,7 +43,7 @@ final class FaceDedector: NSObject {
     }
     
     
-    func dedectFaceInImage() -> Bool {
+    @discardableResult func dedectFaceInImage() -> Bool {
         
         guard let faceImg = CIImage(image: self.imgView.image!) else {
             return false
